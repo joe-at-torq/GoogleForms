@@ -1,0 +1,40 @@
+//Torq Webhook URL
+var POST_URL = "https://hooks.torq.io/v1/webhooks/4cdc3e15-b3d5-4b82-94c1-3...........";
+
+function GetRespondersEmail(){
+  var form = FormApp.getActiveForm();
+  var emailTo = [];
+  var responses=form.getResponses();
+
+for(var i = 0; i < responses.length; i++){
+   emailTo[0] = responses[i].getRespondentEmail();     
+}
+  return emailTo[0];
+};
+
+function onSubmit(e) {
+    var form = FormApp.getActiveForm();
+    var allResponses = form.getResponses();
+    var responses = form.getResponses();
+    var latestResponse = allResponses[allResponses.length - 1];
+    var response = latestResponse.getItemResponses();
+    var emailTo = [];
+    var payload = {};
+    for (var i = 0; i < response.length; i++) {
+        var question = response[i].getItem().getTitle();
+        var answer = response[i].getResponse();
+
+        payload[question] = answer;
+    }
+
+    //Append Email to Event
+    email = GetRespondersEmail();
+    payload["Email"] = email;
+  
+    var options = {
+        "method": "post",
+        "contentType": "application/json",
+        "payload": JSON.stringify(payload)
+    };
+UrlFetchApp.fetch(POST_URL, options);
+};
